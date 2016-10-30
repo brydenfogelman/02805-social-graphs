@@ -56,21 +56,24 @@ def combined():
 
 	return unique_philosphers
 
-def get_wikicontent(philosopher):
+def get_wikicontent(philosopher, payload):
 	wikipedia_root_api_url = "http://en.wikipedia.org/w/api.php"
 
-	payload = {
-		'action': 'query',
-		'format': 'json',
-		'prop': 'revisions',
-		'rvprop': 'content',
-		'titles': philosopher
-	}
+	if not payload:
+		payload = {
+			'action': 'query',
+			'format': 'json',
+			'prop': 'revisions',
+			'rvprop': 'content'
+		}
+
+	payload['titles'] = philosopher
 
 	response = requests.get(wikipedia_root_api_url, params=payload)
 	wikijson = response.json()
 
 	if 'pages' not in wikijson['query']:
+		print 'ERROR: pages key missing %s' % philosopher
 		return None
 
 	# grab the id of the wiki page  
@@ -83,26 +86,32 @@ def get_wikicontent(philosopher):
 		print 'ERROR: missing %s' % wikijson['query']['pages']['-1']['title']
 		return None
 	# if the content exists then return
-	if 'revisions' in content:
-		return content['revisions'][0]['*']
+	# key mapping in wiki json is related to field in prop query
+	content_keyword = payload['prop'].replace('s','')
+
+	if content_keyword in content:
+		if content_keyword == 'revisions':
+			return content[content_keyword][0]['*']
+		else:
+			return content[content_keyword]
 	else:
 		print 'UNHANDLED CASE: id = %s ' % page_id
+		# print wikijson
 
-def save_to_file(file_name, content):
-	with io.open(file_dir() + '/' + file_name + '.pickle', 'wb') as f:
+def save_to_file(file_name, content, directory):
+	with io.open(directory + '/' + file_name + '.pickle', 'wb') as f:
 		pickle.dump(content, f)
 		f.close()
 
-def file_dump():
+def file_dump(directory=file_dir(), **payload):
 	for philosopher in combined():
-		if 'Categor' in philosopher:
-			continue
-		wikicontent = get_wikicontent(philosopher)
+		if not payload:
+			payload = None
+		wikicontent = get_wikicontent(philosopher, payload)
 		if wikicontent:
-			save_to_file(philosopher, (philosopher, wikicontent))
+			save_to_file(philosopher, (philosopher, wikicontent), directory)
 
-def file_load():
-	directory = file_dir()
+def file_load(directory = file_dir()):
 	content = []
 	for file in [join(directory, f) for f in listdir(directory) if isfile(join(directory, f))]:
 		if './philosophers/content/.DS_Store' in file:
