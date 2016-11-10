@@ -4,3 +4,6 @@ bryden/wikipedia-data/*
 bryden/tokens.pickle
 files/*
 files/wikipedia-data/*
+project/day_after/*
+project/election_day/*
+project/since_nov8/*
