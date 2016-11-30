@@ -1,7 +1,11 @@
-import pymongo
+import pymongo, pprint, time
 from pymongo import MongoClient
 from plotly.offline import plot
-import pprint
+from tabulate import tabulate
+
+#-------------------#
+#   MONGO HELPERS   #
+#-------------------#
 
 def setup_mongo_client(properties_file='db.properties', db_url='mongodb://%s:%s@ds161487.mlab.com:61487/election_tweets'):
     properties = dict(line.strip().split('=') 
@@ -13,11 +17,31 @@ def setup_mongo_client(properties_file='db.properties', db_url='mongodb://%s:%s@
     
     return client
 
+def get_collections(client, index_keys=[('retweeted', pymongo.ASCENDING)]):
+    '''
+    Creates indexes and returns the user and tweet collection. By default there is an index created for the retweeted field.
+    
+    Parameters:
+    client - Mongo DB client
+    keys - a list of (key, direction) pairs specifying the index to create
+    '''
+    db = client.election_tweets
+    
+    tweet_collection = db.tweets
+    user_collection = db.users
+    
+    # create index for retweeted field
+    tweet_collection.create_index(index_keys)
+    
+    return tweet_collection, user_collection
 
 def print_mongo_results(coll):
     for res in coll:
         pprint.pprint(res)
-
+        
+#-------------------#
+#   PLOTLY HELPER   #
+#-------------------#
 
 def get_figure(data, title, xaxis, yaxis):
     layout = dict(title=title,
@@ -48,3 +72,34 @@ def save_plot_as_div(figure, include_plotlyjs=False, filename=None):
     else:
         # Return content if not
         return div_content
+
+#-------------------#
+#   TWEET HELPERS   #
+#-------------------#
+
+def convert_datetime(twitter_time):
+    '''
+    Returns a time object containing the converted Twitter time.
+    
+    Parameters:
+    twitter_time
+    '''
+    return time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(twitter_time,'%a %b %d %H:%M:%S +0000 %Y'))
+
+    
+#-------------------#
+#   OTHER HELPERS   #
+#-------------------#
+
+def display_table(data, title=None, limit=20, **kwargs):
+    '''
+    Print data in table.
+    '''
+    if title:            
+        print title + ' (limited to %s results)' % limit
+    if type(data[0]) == tuple:
+        data = [[str(tup[0]), str(tup[1])] for tup in data[:limit]]
+    print tabulate(data[:limit], tablefmt="fancy_grid", **kwargs)
+    print '\n'
+
+

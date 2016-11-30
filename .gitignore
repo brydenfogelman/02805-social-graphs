@@ -4,7 +4,7 @@ bryden/wikipedia-data/*
 bryden/tokens.pickle
 files/*
 files/wikipedia-data/*
-project/day_after/*
-project/election_day/*
-project/since_nov8/*
-project/db.properties
+project/properties/*
+project/data_files/*
+project/tweets/*
+project/elections_helper.pyc
