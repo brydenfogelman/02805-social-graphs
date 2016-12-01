@@ -35,10 +35,18 @@ def get_collections(client, index_keys=[('retweeted', pymongo.ASCENDING)]):
     
     return tweet_collection, user_collection
 
-def print_mongo_results(coll):
+def print_mongo_results(coll, fields=None):
     for res in coll:
-        pprint.pprint(res)
+        # If we specified a list of fields, only take them
+        if fields:
+            res_fields = {}
+            for k, v in res.iteritems():
+                if k in fields:
+                    res_fields[k] = v
+            res = res_fields
         
+        pprint.pprint(res)
+
 #-------------------#
 #   PLOTLY HELPER   #
 #-------------------#
