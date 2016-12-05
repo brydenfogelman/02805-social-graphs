@@ -1,0 +1,3 @@
+[submodule "project/TweetAnalysis"]
+	path = project/TweetAnalysis
+	url = https://github.com/USElections2016/TweetAnalysis.git
