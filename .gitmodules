@@ -1,3 +1,6 @@
 [submodule "project/TweetAnalysis"]
 	path = project/TweetAnalysis
 	url = https://github.com/USElections2016/TweetAnalysis.git
+[submodule "project/uselections2016tweetanalysis.github.io"]
+	path = project/uselections2016tweetanalysis.github.io
+	url = https://github.com/USElections2016TweetAnalysis/uselections2016tweetanalysis.github.io.git
