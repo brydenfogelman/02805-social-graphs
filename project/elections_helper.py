@@ -1,4 +1,4 @@
-import pymongo, pprint, time
+import pymongo, pprint, time, operator
 from pymongo import MongoClient
 from plotly.offline import plot
 from tabulate import tabulate
@@ -135,5 +135,8 @@ def merge_dicts(*dict_args):
     for dictionary in dict_args:
         result.update(dictionary)
     return result
+
+def sort_dict(d, reverse=True):
+    return sorted(d.items(), key=operator.itemgetter(1), reverse=reverse)
 
 
