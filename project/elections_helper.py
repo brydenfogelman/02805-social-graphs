@@ -109,5 +109,31 @@ def display_table(data, title=None, limit=20, **kwargs):
         data = [[str(tup[0]), str(tup[1])] for tup in data[:limit]]
     print tabulate(data[:limit], tablefmt="fancy_grid", **kwargs)
     print '\n'
+    
+def get_dict_representation(X, feature_names, merge=False):
+    '''
+    Convert sparse matrix representation to dictionary.
+    '''
+    dict_vectorizer = DictVectorizer()
+
+    # set feature names so dictionaries can be unpacked
+    dict_vectorizer.feature_names_ = feature_names
+
+    # merge dictionaries
+    if merge:
+        return merge_dicts(*dict_vectorizer.inverse_transform(X))
+    # keep seperate
+    else:
+        return dict_vectorizer.inverse_transform(X)
+    
+def merge_dicts(*dict_args):
+    '''
+    Given any number of dicts, shallow copy and merge into a new dict,
+    precedence goes to key value pairs in latter dicts.
+    '''
+    result = {}
+    for dictionary in dict_args:
+        result.update(dictionary)
+    return result
 
 
