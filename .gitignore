@@ -8,3 +8,4 @@ project/properties/*
 project/data_files/*
 project/tweets/*
 project/elections_helper.pyc
+project/plots/*
